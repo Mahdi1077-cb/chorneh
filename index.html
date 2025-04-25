@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سیستم فاکتور کافه چرنه</title>
+    <style>
+      @font-face {
+        font-family: "YekanBakh-Regular";
+        src: url("./YekanBakh-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      * {
+        font-family: "YekanBakh-Regular", sans-serif;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f0f2f5;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .container {
+        background-color: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-size: 24px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #34495e;
+        font-weight: bold;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #3498db;
+        outline: none;
+      }
+
+      .order-items {
+        margin: 25px 0;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        position: relative;
+      }
+
+      .order-items h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .order-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        align-items: center;
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .order-item select,
+      .order-item input {
+        flex: 1;
+        padding: 10px;
+      }
+
+      .remove-item {
+        background-color: transparent;
+        color: #e74c3c;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        padding: 0;
+      }
+
+      .remove-item:hover {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      button {
+        background-color: #3498db;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin-top: 20px;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+
+      #invoice {
+        display: none;
+        margin-top: 30px;
+        padding: 25px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        background-color: white;
+        width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #invoiceContent {
+        line-height: 1.6;
+        direction: rtl;
+      }
+
+      .invoice-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eee;
+      }
+
+      .invoice-header h2 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+
+      .invoice-header p {
+        color: #7f8c8d;
+        margin: 5px 0;
+        font-size: 14px;
+      }
+
+      .invoice-details {
+        margin-bottom: 20px;
+      }
+
+      .invoice-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      .invoice-table th {
+        background-color: #f8f9fa;
+        padding: 10px;
+        text-align: center;
+        border-bottom: 2px solid #dee2e6;
+        font-size: 14px;
+      }
+
+      .invoice-table td {
+        padding: 10px;
+        border-bottom: 1px solid #dee2e6;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .invoice-footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 2px solid #eee;
+        color: #7f8c8d;
+        font-size: 12px;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+
+        .container {
+          padding: 15px;
+        }
+
+        .order-item {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .order-item select,
+        .order-item input {
+          width: 100%;
+        }
+      }
+
+      .add-item-btn {
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 5px 6px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-top: 0;
+        transition: background-color 0.3s;
+        height: 30px;
+        width: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .add-item-btn:hover {
+        background-color: #219a52;
+      }
+
+      .add-item-container {
+        text-align: left;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>سیستم فاکتور کافه چرنه</h1>
+
+      <div class="form-group">
+        <label for="customerName">نام مشتری:</label>
+        <input type="text" id="customerName" required />
+      </div>
+
+      <div class="form-group">
+        <label for="customerPhone">شماره تماس (اختیاری):</label>
+        <input type="tel" id="customerPhone" />
+      </div>
+
+      <div class="order-items" id="foodItems">
+        <h3>
+          غذاها
+          <button
+            class="add-item-btn"
+            onclick="addNewItem('foodItems', 'food')"
+          >
+            + افزودن غذا
+          </button>
+        </h3>
+        <div class="order-item">
+          <select class="food-select">
+            <option value="">انتخاب غذا</option>
+          </select>
+          <input
+            type="number"
+            class="quantity"
+            min="0"
+            max="7"
+            value="1"
+            placeholder="تعداد"
+          />
+          <button
+            class="remove-item"
+            onclick="removeItem(this)"
+            title="حذف آیتم"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+
+      <div class="order-items" id="drinkItems">
+        <h3>
+          نوشیدنی‌ها
+          <button
+            class="add-item-btn"
+            onclick="addNewItem('drinkItems', 'drink')"
+          >
+            + افزودن نوشیدنی
+          </button>
+        </h3>
+        <div class="order-item">
+          <select class="drink-select">
+            <option value="">انتخاب نوشیدنی</option>
+          </select>
+          <input
+            type="number"
+            class="quantity"
+            min="0"
+            max="7"
+            value="1"
+            placeholder="تعداد"
+          />
+          <button
+            class="remove-item"
+            onclick="removeItem(this)"
+            title="حذف آیتم"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+
+      <button onclick="generateInvoice()">ثبت سفارش</button>
+
+      <div id="invoice">
+        <h2>فاکتور</h2>
+        <div id="invoiceContent"></div>
+        <button onclick="downloadInvoice()">دانلود فاکتور</button>
+      </div>
+    </div>
+
+    <script src="products.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      // Initialize menu options
+      document.addEventListener("DOMContentLoaded", function () {
+        const foodSelects = document.querySelectorAll(".food-select");
+        const drinkSelects = document.querySelectorAll(".drink-select");
+
+        foodSelects.forEach((select) => {
+          select.innerHTML += getMenuOptions("food");
+        });
+
+        drinkSelects.forEach((select) => {
+          select.innerHTML += getMenuOptions("drink");
+        });
+      });
+
+      function addNewItem(containerId, type) {
+        const container = document.getElementById(containerId);
+        const totalItems = document.querySelectorAll(".order-item").length;
+
+        if (totalItems >= 7) {
+          alert("حداکثر تعداد 7 آیتم قابل ثبت است");
+          return;
+        }
+
+        const newItem = document.createElement("div");
+        newItem.className = "order-item";
+        newItem.innerHTML = `
+          <select class="${type}-select">
+            <option value="">انتخاب ${
+              type === "food" ? "غذا" : "نوشیدنی"
+            }</option>
+            ${getMenuOptions(type)}
+          </select>
+          <input type="number" class="quantity" min="0" max="7" value="1" placeholder="تعداد">
+          <button class="remove-item" onclick="removeItem(this)" title="حذف آیتم">×</button>
+        `;
+        container.appendChild(newItem);
+
+        // Initialize the new select with menu options
+        const newSelect = newItem.querySelector(`.${type}-select`);
+        newSelect.innerHTML = `<option value="">انتخاب ${
+          type === "food" ? "غذا" : "نوشیدنی"
+        }</option>${getMenuOptions(type)}`;
+      }
+
+      function removeItem(button) {
+        const item = button.parentElement;
+        const container = item.parentElement;
+        const items = container.querySelectorAll(".order-item");
+
+        if (items.length > 1) {
+          item.remove();
+        } else {
+          // Reset the last item instead of removing it
+          const select = item.querySelector("select");
+          const quantity = item.querySelector(".quantity");
+          select.value = "";
+          quantity.value = "1";
+        }
+      }
+
+      document
+        .querySelectorAll(".food-select, .drink-select")
+        .forEach((select) => {
+          select.addEventListener("change", function () {
+            if (this.value) {
+              const container = this.closest(".order-items");
+              const type = this.classList.contains("food-select")
+                ? "food"
+                : "drink";
+              addNewItem(container.id, type);
+            }
+          });
+        });
+
+      function getCurrentDateTime() {
+        const now = new Date();
+        const options = {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        };
+        return now.toLocaleDateString("fa-IR", options);
+      }
+
+      function generateInvoice() {
+        const customerName = document.getElementById("customerName").value;
+        const customerPhone = document.getElementById("customerPhone").value;
+
+        if (!customerName) {
+          alert("لطفا نام مشتری را وارد کنید");
+          return;
+        }
+
+        let total = 0;
+        let items = [];
+
+        document.querySelectorAll(".order-item").forEach((item) => {
+          const select = item.querySelector("select");
+          const quantity = item.querySelector(".quantity").value;
+
+          if (select.value && quantity > 0) {
+            const price = getPrice(select.value);
+            const itemTotal = price * quantity;
+            total += itemTotal;
+
+            items.push({
+              name: getItemName(select.value),
+              quantity: quantity,
+              price: price,
+              total: itemTotal,
+            });
+          }
+        });
+
+        if (items.length === 0) {
+          alert("لطفا حداقل یک آیتم به سفارش اضافه کنید");
+          return;
+        }
+
+        const invoiceContent = document.getElementById("invoiceContent");
+        invoiceContent.innerHTML = `
+          <div class="invoice-header">
+            <h2>فاکتور فروش</h2>
+            <p>کافه چرنه</p>
+            <p>${getCurrentDateTime()}</p>
+          </div>
+          <div class="invoice-details">
+            <p><strong>نام مشتری:</strong> ${customerName}</p>
+            ${
+              customerPhone
+                ? `<p><strong>شماره تماس:</strong> ${customerPhone}</p>`
+                : ""
+            }
+          </div>
+          <table class="invoice-table">
+            <thead>
+              <tr>
+                <th>نام کالا</th>
+                <th>تعداد</th>
+                <th>قیمت واحد</th>
+                <th>جمع</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items
+                .map(
+                  (item) => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.price.toLocaleString()} تومان</td>
+                  <td>${item.total.toLocaleString()} تومان</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" style="text-align: left;"><strong>جمع کل:</strong></td>
+                <td><strong>${total.toLocaleString()} تومان</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+          <div class="invoice-footer">
+            <p>با تشکر از انتخاب شما</p>
+            <p>نوش جان</p>
+          </div>
+        `;
+
+        document.getElementById("invoice").style.display = "block";
+      }
+
+      function downloadInvoice() {
+        const element = document.getElementById("invoice");
+
+        // Show loading message
+        const originalButton = document.querySelector("#invoice button");
+        const originalText = originalButton.textContent;
+        originalButton.textContent = "فاکتور مشتری";
+        originalButton.disabled = true;
+
+        // Simple and direct approach
+        html2canvas(element, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+        })
+          .then((canvas) => {
+            // Convert to image
+            const imgData = canvas.toDataURL("image/jpeg", 1.0);
+
+            // Create download link
+            const link = document.createElement("a");
+            link.download = "invoice.jpg";
+            link.href = imgData;
+
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Restore button
+            originalButton.textContent = originalText;
+            originalButton.disabled = false;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("خطا در ایجاد فاکتور. لطفا دوباره تلاش کنید.");
+            // Restore button
+            originalButton.textContent = originalText;
+            originalButton.disabled = false;
+          });
+      }
+    </script>
+  </body>
+</html>
